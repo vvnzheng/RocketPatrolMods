@@ -6,16 +6,16 @@ class Fisher extends Phaser.GameObjects.Sprite {
       // add object to existing scene
       scene.add.existing(this);
       //firing status
-      //this.isFiring = false;
+      this.isFiring = false;
       //pixels per frame
       this.moveSpeed = 2;
       //firing sound
       this.sfxRocket = scene.sound.add('sfx_rocket');
     }
-    update(){
+    update(hook){
         //left/right
-        if(!Rocket.isFiring){
-            console.log(Rocket.isFiring);
+        if(!hook.isFiring){
+            console.log(hook.isFiring);
             if(keyLEFT.isDown && this.x >= borderUISize + this.width){
                 this.x -= this.moveSpeed;
             } else if (keyRIGHT.isDown && this.x <= game.config.width - borderUISize - this.width){

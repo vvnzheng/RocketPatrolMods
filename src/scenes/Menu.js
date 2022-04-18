@@ -4,10 +4,11 @@ class Menu extends Phaser.Scene {
     }
     preload(){
         //audio
-        this.load.audio('sfx_select', './assets/assets_blip_select12.wav');
+        this.load.audio('sfx_select', './assets/music/select.wav');
         this.load.audio('sfx_explosion', './assets/assets_explosion38.wav');
         this.load.audio('sfx_rocket', './assets/assets_rocket_shot.wav');
-        //this.load.fontFamily('press_start_2pregular', './assets/fonts/PressStart2P-Regular.ttf');
+        this.load.audio('sfx_caught', './assets/music/fishcaught.wav');
+        this.load.audio('sfx_reel', './assets/music/reel.wav');
     }
     create(){
         let menuConfig = {
@@ -23,7 +24,7 @@ class Menu extends Phaser.Scene {
             fixedWidth: 0
         }
         //menu
-        this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'ROCKET PATROL', menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'GO FISH', menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height/2, 'Use <--> arrows to move & (F) to fire', menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, 'Press <- for Novice or -> for Expert', menuConfig).setOrigin(0.5);
         //menuConfig.backgroundColor = '#00FF00';

@@ -1,5 +1,5 @@
-// Rocket prefab
-class Rocket extends Phaser.GameObjects.Sprite {
+// Hook prefab
+class Hook extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, frame) {
       super(scene, x, y, texture, frame);
   
@@ -10,7 +10,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
       //pixels per frame
       this.moveSpeed = 2;
       //firing sound
-      this.sfxRocket = scene.sound.add('sfx_rocket');
+      this.sfxReel = scene.sound.add('sfx_reel');
     }
     update(){
         //left/right
@@ -24,7 +24,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         //fire
         if(Phaser.Input.Keyboard.JustDown(keyF)){
             this.isFiring = true;
-            this.sfxRocket.play();
+            this.sfxReel.play();
         }
         //if fired, move up
         if(this.isFiring && this.y >= borderUISize * 3 + borderPadding){

@@ -6,28 +6,33 @@ class Play extends Phaser.Scene {
         //load sprites
         this.load.image('rocket', './assets/rocket.png');
         this.load.image('fisher', './assets/art/fisher_small.png');
-        this.load.image('spaceship', './assets/spaceship.png');
-        this.load.image('starfield', './assets/starfield.png');
+        this.load.image('fish', './assets/art/fish.png');
+        this.load.image('piranha', './assets/art/piranha.png');
+        this.load.image('hook', './assets/art/hook.png');
+        this.load.spritesheet('piranhaanimation', './assets/art/piranhaanimation.png', {frameWidth: 48, frameHeight: 48, startFrame: 0, endFrame: 10});
+        this.load.image('lake', './assets/art/lake.png');
+        this.load.image('pointlogo', './assets/art/pointlogo.png');
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
     create(){
         //place tile sprite
-        this.starfield = this.add.tileSprite(0, 0, 640,480, 'starfield').setOrigin(0,0);
-        //green background
-        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0);
+        this.lake = this.add.tileSprite(0, 0, 640,480, 'lake').setOrigin(0,0);
+        //orange background
+        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0xffa500).setOrigin(0,0);
         //white borders
-        this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
+        /*this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
-        this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
+        this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);*/
         // add fisher1
         this.fisher1 = new Fisher(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'fisher').setOrigin(0.5, 0.85);
-        // add rocket (p1)
-        this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
-        // add spaceships (3)
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0,0);
+        // add hook (p1)
+        this.p1Hook = new Hook(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'hook').setOrigin(0.5, 0);
+        // add fish (4)
+        this.fish01 = new Fish(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'fish', 0, 30, false).setOrigin(0, 0);
+        this.fish02 = new Fish(this, game.config.width, borderUISize*6 + borderPadding*4, 'fish', 0, 20, false).setOrigin(0,0);
+        this.fish03 = new Fish(this, game.config.width - borderUISize*3, borderUISize*7 + borderPadding*3, 'fish', 0, 10, false).setOrigin(0,0);
+        this.fish04 = new Fish(this, game.config.width + borderUISize*6, borderUISize*4, 'piranha', 0, 50, true).setOrigin(0,0);
         // define keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -35,25 +40,28 @@ class Play extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         // animation config
         this.anims.create({
-            key: 'explode',
-            frames: this.anims.generateFrameNumbers('explosion', {start: 0, end: 9, first: 0}),
+            key: 'piranhacaught',
+            frames: this.anims.generateFrameNumbers('piranhaanimation', {start: 0, end: 10, first: 0}),
             frameRate: 30
         });
         this.p1Score = 0;
         // display score
         let scoreConfig = {
             fontFamily: 'press_start_2pregular',
-            fontSize: '15px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
+            fontSize: '20px',
+            backgroundColor: '#02075d',
+            color: '#FFD580',
             align: 'right',
             padding: {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 100
+            fixedWidth: 100,
+            fixedHeight: 50
         }
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
+        //add pointlogo
+        this.pointlogo = this.add.sprite(75, 75, 'pointlogo');
         
         //GAME OVER
         this.gameOver = false;
@@ -74,45 +82,52 @@ class Play extends Phaser.Scene {
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene");
         }
-        this.starfield.tilePositionX -= 4;
+        this.lake.tilePositionX -= 4;
         if(!this.gameOver){
-            this.fisher1.update();
-            this.p1Rocket.update();
-            this.ship01.update();
-            this.ship02.update();
-            this.ship03.update();
+            this.fisher1.update(this.p1Hook);
+            this.p1Hook.update();
+            this.fish01.update();
+            this.fish02.update();
+            this.fish03.update();
+            this.fish04.update();
         }
-        this.checkCollision(this.p1Rocket, this.ship01);
-        this.checkCollision(this.p1Rocket, this.ship02);
-        this.checkCollision(this.p1Rocket, this.ship03);
+        this.checkCollision(this.p1Hook, this.fish01);
+        this.checkCollision(this.p1Hook, this.fish02);
+        this.checkCollision(this.p1Hook, this.fish03);
+        this.checkCollision(this.p1Hook, this.fish04);
     }
-    checkCollision(rocket, ship) {
+    checkCollision(hook, fish) {
         // simple AABB checking
-        if (rocket.x < ship.x + ship.width && 
-            rocket.x + rocket.width > ship.x && 
-            rocket.y < ship.y + ship.height &&
-            rocket.height + rocket.y > ship. y) {
-                rocket.reset();
-                this.shipExplode(ship);
+        if (hook.x < fish.x + fish.width && 
+            hook.x + hook.width > fish.x && 
+            hook.y < fish.y + fish.height &&
+            hook.height + hook.y > fish. y) {
+                hook.reset();
+                this.fishExplode(fish);
                 //return true;
         } //else {
             //return false;
         //}
     }
-    shipExplode(ship) {
-        // temporarily hide ship
-        ship.alpha = 0;
-        // create explosion sprite at ship's position
-        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
-        boom.anims.play('explode');             // play explode animation
+    fishExplode(fish) {
+        // temporarily hide fish
+        fish.alpha = 0;
+        // create explosion sprite at fish's position
+        //if(fish.piranha){
+            let boom = this.add.sprite(fish.x, fish.y, 'piranhaanimation').setOrigin(0, 0);
+            boom.anims.play('piranhacaught');             // play piranha animation
+        /*} else {
+            let boom = this.add.sprite(fish.x, fish.y, 'piranhaanimation').setOrigin(0, 0);
+            boom.anims.play('explode');             // play explode animation
+        }*/
         boom.on('animationcomplete', () => {    // callback after anim completes
-          ship.reset();                         // reset ship position
-          ship.alpha = 1;                       // make ship visible again
+          fish.reset();                         // reset fish position
+          fish.alpha = 1;                       // make fish visible again
           boom.destroy();                       // remove explosion sprite
         });
         //update score
-        this.p1Score += ship.points;
+        this.p1Score += fish.points;
         this.scoreLeft.text = this.p1Score;
-        this.sound.play('sfx_explosion');       
+        this.sound.play('sfx_caught');       
     }
 }
