@@ -12,8 +12,8 @@ class Menu extends Phaser.Scene {
     }
     create(){
         let menuConfig = {
-            fontFamily: 'press_start_2pregular',
-            fontSize: '15px',
+            fontFamily: 'bubbles',
+            fontSize: '30px',
             //backgroundColor: '#F3B141',
             color: '#42adf5',
             align: 'right',

@@ -3,6 +3,7 @@ let config = {
     type: Phaser.AUTO,
     width: 640,
     height: 480,
+    backgroundColor: 0xffa500,
     scene: [ Menu, Play]
 }
 let game = new Phaser.Game(config);

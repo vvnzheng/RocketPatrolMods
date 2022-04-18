@@ -12,6 +12,7 @@ class Play extends Phaser.Scene {
         this.load.spritesheet('piranhaanimation', './assets/art/piranhaanimation.png', {frameWidth: 48, frameHeight: 48, startFrame: 0, endFrame: 10});
         this.load.image('lake', './assets/art/lake.png');
         this.load.image('pointlogo', './assets/art/pointlogo.png');
+        this.load.image('clock', './assets/art/clock.png');
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
     create(){
@@ -47,8 +48,8 @@ class Play extends Phaser.Scene {
         this.p1Score = 0;
         // display score
         let scoreConfig = {
-            fontFamily: 'press_start_2pregular',
-            fontSize: '20px',
+            fontFamily: 'bubbles',
+            fontSize: '30px',
             backgroundColor: '#02075d',
             color: '#FFD580',
             align: 'right',
@@ -56,16 +57,21 @@ class Play extends Phaser.Scene {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 100,
+            fixedWidth: 200,
             fixedHeight: 50
         }
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
         //add pointlogo
         this.pointlogo = this.add.sprite(75, 75, 'pointlogo');
+        //add clock image
+        this.clock = this.add.sprite(300, 75, 'clock');
         
         //GAME OVER
         this.gameOver = false;
         
+        //clock
+        //this.timeLeft = this.add.text(borderUISize + borderPadding + 225, borderUISize + borderPadding*2, this.gameTimer.getRemainingSeconds(), scoreConfig);
+
         // 60-second play clock
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
@@ -101,7 +107,7 @@ class Play extends Phaser.Scene {
         if (hook.x < fish.x + fish.width && 
             hook.x + hook.width > fish.x && 
             hook.y < fish.y + fish.height &&
-            hook.height + hook.y > fish. y) {
+            hook.height + hook.y > fish.y) {
                 hook.reset();
                 this.fishExplode(fish);
                 //return true;
