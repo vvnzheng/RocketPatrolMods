@@ -6,7 +6,7 @@ class Play extends Phaser.Scene {
         //load sprites
         this.load.image('rocket', './assets/rocket.png');
         this.load.image('fisher', './assets/art/fisher_small.png');
-        this.load.image('fish', './assets/art/fish.png');
+        this.load.spritesheet('fish', './assets/art/fish.png', {frameWidth: 64, frameHeight: 64, startFrame:0, endFrame: 10});
         this.load.image('piranha', './assets/art/piranha.png');
         this.load.image('hook', './assets/art/hook.png');
         this.load.spritesheet('piranhaanimation', './assets/art/piranhaanimation.png', {frameWidth: 48, frameHeight: 48, startFrame: 0, endFrame: 10});
@@ -29,6 +29,12 @@ class Play extends Phaser.Scene {
         this.fisher1 = new Fisher(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'fisher').setOrigin(0.5, 0.85);
         // add hook (p1)
         this.p1Hook = new Hook(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'hook').setOrigin(0.5, 0);
+        
+        this.anims.create({
+            key: 'swim',
+            frames: this.anims.generateFrameNumbers('fish', {start: 0, end: 7, first: 0}),
+            frameRate: 30
+        });
         // add fish (4)
         this.fish01 = new Fish(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'fish', 0, 30, false).setOrigin(0, 0);
         this.fish02 = new Fish(this, game.config.width, borderUISize*6 + borderPadding*4, 'fish', 0, 20, false).setOrigin(0,0);
@@ -46,6 +52,7 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
         this.p1Score = 0;
+        this.highScore = this.p1Score;
         // display score
         let scoreConfig = {
             fontFamily: 'bubbles',
@@ -63,52 +70,86 @@ class Play extends Phaser.Scene {
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
         //add pointlogo
         this.pointlogo = this.add.sprite(75, 75, 'pointlogo');
+
         //add clock image
-        this.clock = this.add.sprite(300, 75, 'clock');
+        this.clock = this.add.sprite(570, 75, 'clock');
         
         //GAME OVER
         this.gameOver = false;
         
-        //clock
-        //this.timeLeft = this.add.text(borderUISize + borderPadding + 225, borderUISize + borderPadding*2, this.gameTimer.getRemainingSeconds(), scoreConfig);
+        let music = this.sound.add('sfx_background');
+        music.setLoop(true);
+        music.play();
 
+
+        this.seconds = game.settings.gameTimer;
         // 60-second play clock
         scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
+        this.clock = this.time.delayedCall(this.seconds, () => {
+            this.add.text(game.config.width/2, game.config.height/2 - 64, this.highScore, scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
+        
+        this.timer = this.add.text(595, 50, this.clock.getRemainingSeconds(), scoreConfig);
+        
+        //looped 1 sec timer
+        /*this.timer = this.time.addEvent(1000, () =>{
+            this.add.text(450, 75, this.seconds -= 1, scoreConfig).setOrigin(0.5);
+        }, this, true);*/
     }
     update(){
+        this.fish01.anims.play('swim', 30, true);
+        this.fish02.anims.play('swim', 30, true);
+        this.fish03.anims.play('swim', 30, true);
         //restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
+            this.timer.loop = true;
         }
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene");
         }
+        //change time
+        /*if(this.timer.loop){
+            this.timer.text = this.seconds;
+        }*/
+        let scoreConfig = {
+            fontFamily: 'bubbles',
+            fontSize: '30px',
+            backgroundColor: '#02075d',
+            color: '#FFD580',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 200,
+            fixedHeight: 50
+        }
+        this.timer.text = this.clock.getRemainingSeconds();
         this.lake.tilePositionX -= 4;
         if(!this.gameOver){
             this.fisher1.update(this.p1Hook);
-            this.p1Hook.update();
+            this.p1Hook.update(this.fisher1.x);
             this.fish01.update();
             this.fish02.update();
             this.fish03.update();
             this.fish04.update();
         }
-        this.checkCollision(this.p1Hook, this.fish01);
-        this.checkCollision(this.p1Hook, this.fish02);
-        this.checkCollision(this.p1Hook, this.fish03);
-        this.checkCollision(this.p1Hook, this.fish04);
+        this.checkCollision(this.fisher1.x, this.p1Hook, this.fish01);
+        this.checkCollision(this.fisher1.x, this.p1Hook, this.fish02);
+        this.checkCollision(this.fisher1.x, this.p1Hook, this.fish03);
+        this.checkCollision(this.fisher1.x, this.p1Hook, this.fish04);
     }
-    checkCollision(hook, fish) {
+    checkCollision(fisherx, hook, fish) {
         // simple AABB checking
         if (hook.x < fish.x + fish.width && 
             hook.x + hook.width > fish.x && 
             hook.y < fish.y + fish.height &&
             hook.height + hook.y > fish.y) {
-                hook.reset();
+                hook.reset(fisherx);
                 this.fishExplode(fish);
                 //return true;
         } //else {
@@ -134,6 +175,9 @@ class Play extends Phaser.Scene {
         //update score
         this.p1Score += fish.points;
         this.scoreLeft.text = this.p1Score;
-        this.sound.play('sfx_caught');       
+        this.sound.play('sfx_caught');     
+        //update time
+        //this.seconds += 5;
+        //this.timer.text = this.seconds;
     }
 }

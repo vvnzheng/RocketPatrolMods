@@ -9,6 +9,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('sfx_rocket', './assets/assets_rocket_shot.wav');
         this.load.audio('sfx_caught', './assets/music/fishcaught.wav');
         this.load.audio('sfx_reel', './assets/music/reel.wav');
+        this.load.audio('sfx_background', './assets/music/background.wav');
     }
     create(){
         let menuConfig = {

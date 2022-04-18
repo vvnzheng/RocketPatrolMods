@@ -12,14 +12,12 @@ class Hook extends Phaser.GameObjects.Sprite {
       //firing sound
       this.sfxReel = scene.sound.add('sfx_reel');
     }
-    update(){
+    update(fisherx){
         //left/right
-        if(!this.isFiring){
-            if(keyLEFT.isDown && this.x >= borderUISize + this.width){
-                this.x -= this.moveSpeed;
-            } else if (keyRIGHT.isDown && this.x <= game.config.width - borderUISize - this.width){
-                this.x += this.moveSpeed;
-            }
+        if(keyLEFT.isDown && this.x >= borderUISize + this.width){
+            this.x -= this.moveSpeed;
+        } else if (keyRIGHT.isDown && this.x <= game.config.width - borderUISize - this.width){
+            this.x += this.moveSpeed;
         }
         //fire
         if(Phaser.Input.Keyboard.JustDown(keyF)){
@@ -32,11 +30,12 @@ class Hook extends Phaser.GameObjects.Sprite {
         }
         //reset on miss
         if(this.y <= borderUISize * 3 + borderPadding){
-            this.reset();
+            this.reset(fisherx);
         }
     }
-    reset(){
+    reset(fisherx){
         this.isFiring = false;
+        this.x = fisherx;
         this.y = game.config.height - borderUISize - borderPadding;
     }
   }
