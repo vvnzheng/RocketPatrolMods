@@ -1,4 +1,10 @@
 
+//Vivian Zheng, GO FISH,04/18/2022, 7-8 hours
+//60 points for total redesign
+//20 points for new, smaller, faster, enemy (piranha)
+//10 points for animated enemies
+//5 points for background music
+//5 points for rocket control after fire
 let config = {
     type: Phaser.AUTO,
     width: 640,
