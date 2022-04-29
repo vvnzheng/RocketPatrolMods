@@ -17,7 +17,7 @@ class Menu extends Phaser.Scene {
             fontSize: '30px',
             //backgroundColor: '#F3B141',
             color: '#42adf5',
-            align: 'right',
+            align: 'left',
             padding: {
                 top: 5,
                 bottom: 5,

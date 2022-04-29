@@ -39,7 +39,7 @@ class Play extends Phaser.Scene {
         this.fish01 = new Fish(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'fish', 0, 30, false).setOrigin(0, 0);
         this.fish02 = new Fish(this, game.config.width, borderUISize*6 + borderPadding*4, 'fish', 0, 20, false).setOrigin(0,0);
         this.fish03 = new Fish(this, game.config.width - borderUISize*3, borderUISize*7 + borderPadding*3, 'fish', 0, 10, false).setOrigin(0,0);
-        this.fish04 = new Fish(this, game.config.width + borderUISize*6, borderUISize*4, 'piranha', 0, 50, true).setOrigin(0,0);
+        this.fish04 = new Fish(this, game.config.width + borderUISize*6, borderUISize*4, 'piranha', 0, 60, true).setOrigin(0,0);
         // define keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
